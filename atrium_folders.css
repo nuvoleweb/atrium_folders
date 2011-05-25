@@ -1,0 +1,316 @@
+
+
+span.spaces-feature.feature-atrium_folders,
+#features-menu li a.icon-folders span.icon {
+  background: url("images/sprite.png") no-repeat scroll 0 0 transparent;
+}
+
+span.spaces-feature.feature-atrium_folders  {
+  background-position: 0px 100%;
+}
+div.fileview a.folder {
+  background: url("images/folder.png") no-repeat center;
+}
+
+td.views-field.icon {
+  padding:5px 15px;
+  width:40px;
+}
+
+.drop-zone {
+  -moz-border-radius:15px 15px 15px 15px;
+  border:5px dashed #CCCCCC;
+  color:#999999;
+  font-size:30px;
+  line-height:40px;
+  margin:15px 30px;
+  padding:35px;
+  text-align:center;
+}
+.drop-zone p {
+  font-size:14px;
+  line-height: 20px;
+  color: #aaa;    
+}
+
+#book-outline .form-item {
+  position: static;
+  display:inline-block;
+  padding-left:20px;
+  position:static;
+  background: transparent url("images/sprite.png") 0 -340px no-repeat !important;  
+}
+#book-outline .draggable a.tabledrag-handle {
+  padding-right: 10px;
+}
+#book-outline input.fluid {
+  width: auto;
+}
+/**
+ * Folder navigator -------------------------------------------------
+ */
+.atrium-folders-navigator {
+  -moz-border-radius: 5px;
+  -moz-box-shadow:0 2px 2px #ccc;  
+  -webkit-border-radius: 5px;
+  -webkit-box-shadow:0 2px 2px #ccc;  
+  background: #d8d9db url("images/navigator-bg.png") repeat-x top left;
+}
+.atrium-folders-navigator table td,
+.atrium-folders-navigator table th {
+  border-color: white !important;
+  border-bottom: 1px solid #ebebeb !important;
+}
+
+.atrium-folders-navigator-inner {
+  padding: 10px;
+}
+.atrium-folders-navigator .navigator {
+  background: #fff;
+}
+
+.atrium-folders-navigator .toolbar .buttons {
+  border: 0;
+  background: transparent;
+}
+.atrium-folders-navigator .toolbar .buttons a:hover {
+  background-color: #666666;
+}
+.atrium-folders-navigator .toolbar .buttons a.toggle-on {
+  background-position: 0 100%;
+}
+
+#folder-toolbar-fieldsets,
+.folder-toolbar-fieldset.fieldset,
+.folder-toolbar-fieldset.fieldset.titled {
+  padding-top: 10px;
+  display: none;
+}
+.folder-toolbar-fieldset.fieldset.titled .fieldset-content {
+  padding-top: 0px;
+}
+
+.atrium-folders-navigator table {
+  margin-bottom: 0;
+}
+.atrium-folders-navigator table td.views-field {
+  vertical-align: middle;
+}
+.atrium-folders-navigator table td.views-field.title,
+.atrium-folders-navigator table td.views-field.filename {
+  font-size: 14px;
+}
+
+.atrium-folders-navigator .left {
+  float: left;
+  width: 30%;
+}
+.atrium-folders-navigator .left li,
+.atrium-folders-navigator .left ul {
+  border-top: 1px solid #eee;
+}
+.atrium-folders-navigator .left li.first {
+  border-top: 0;  
+}
+
+.atrium-folders-navigator .right {
+  float: left;
+  width: 69.9%;  
+}
+
+.atrium-folders-navigator .views-field.date {
+  width: 130px;
+}
+.atrium-folders-navigator .views-field.toolbox {
+  width: 100px;
+}
+.atrium-folders-navigator .views-field .filename,
+.atrium-folders-navigator .views-field.description a {
+  display: block;
+ overflow: hidden;
+ width: 300px;
+}
+.atrium-folders-navigator .views-field .filename,
+.atrium-folders-navigator .views-field.filesize {
+  color:#666666;
+  font-size:11px;
+}
+
+
+/**
+ * Navigation ---------------------------------------------------------
+ */
+.view-folders-navigation .views-row a {
+  margin: 0;
+  font-size:14px;
+  padding:7px 0 7px 40px;
+  background:url("images/folder.png") no-repeat scroll 0 50% transparent;
+}
+.view-folders-navigation .depth-1 a { background-position: 20px   50%; padding-left: 60px; }
+.view-folders-navigation .depth-2 a { background-position: 40px   50%; padding-left: 80px; }
+.view-folders-navigation .depth-3 a { background-position: 60px   50%; padding-left: 100px; }
+.view-folders-navigation .depth-4 a { background-position: 80px   50%; padding-left: 120px; }
+.view-folders-navigation .depth-5 a { background-position: 100px  50%; padding-left: 140px; }
+.view-folders-navigation .depth-6 a { background-position: 120px  50%; padding-left: 160px; }
+.view-folders-navigation .depth-7 a { background-position: 140px  50%; padding-left: 180px; }
+.view-folders-navigation .depth-8 a { background-position: 160px  50%; padding-left: 200px; }
+.view-folders-navigation .depth-9 a { background-position: 180px  50%; padding-left: 220px; }
+.view-folders-navigation .views-row-odd a:hover, 
+.view-folders-navigation .views-row-odd a { background-color: #fff; }
+.view-folders-navigation .views-row-even a:hover,
+.view-folders-navigation .views-row-even a { background-color: #edf3ff; }
+.view-folders-navigation .views-row.active a { background-color: #3875d7; }
+.view-folders-navigation .views-row.active a.active { color: #fff; }
+.view-folders-navigation a { display: block; }
+
+.folder-toolbar-fieldset legend,
+.folder-toolbar-fieldset h2 { 
+  display: none;
+}
+.folder-toolbar-fieldset .description { 
+  display: none;
+}
+.folder-toolbar-fieldset .inner {
+  padding: 10px;
+}
+.folder-toolbar-fieldset .right {
+  border-left: 1px solid #ddd; 
+}
+.folder-toolbar-fieldset .left .title {
+   font-size: 17px;
+   font-weight: bold;
+   line-height: 25px;
+}
+.folder-toolbar-fieldset .left .description { 
+  display: block;
+  font-size: 13px;
+  line-height: 21px;
+} 
+.folder-toolbar-fieldset.fieldset,
+.folder-toolbar-fieldset.fieldset .fieldset-content, 
+.folder-toolbar-fieldset.fieldset .fieldset .fieldset-content {
+  background: transparent;
+  border: 0;
+}
+
+
+/**
+ * Modal Tooltip ------------------------------------------------------
+ */
+.modal-tooltip-container {
+  float: left;
+  position: relative;
+}
+.modal-tooltip-container a.modal-tooltip-link {
+  height: 24px;
+  width: 24px;
+  margin: 0 3px;
+  text-indent: -1000px;
+  overflow: hidden;
+  background: #eee;
+  display: block;
+  -moz-border-radius:3px;
+}
+.modal-tooltip-container div.ctools-modal-content,
+.modal-tooltip-container a.modal-tooltip-link.toggle-on {
+  background: #ddd;
+  -moz-border-radius:3px 3px 0px 0px;
+  -moz-box-shadow:0 2px 2px #666666;  
+  -webkit-border-radius:3px 3px 0px 0px;
+  -webkit-box-shadow:0 2px 2px #666666;  
+}
+
+.modal-tooltip-link.ctools-ajaxing {
+  background: #ddd url("images/ajax-loader.gif") 50% 50% no-repeat !important;
+}
+
+.modal-tooltip-container a.modal-tooltip-link.toggle-on {
+  background: #ddd url("images/sprite.png") -341px 4px no-repeat !important;
+}
+.modal-tooltip-container a.modal-tooltip-link.move {
+  background: #eee url("images/sprite.png") 100% -87px no-repeat;
+}
+.modal-tooltip-container a.modal-tooltip-link.rename {
+  background: #eee url("images/sprite.png") 100% -65px no-repeat;
+}
+.modal-tooltip-container a.modal-tooltip-link.delete {
+  background: #eee url("images/sprite.png") 100% -44px no-repeat;
+}
+
+.modal-tooltip-link.ctools-ajaxing {
+  background: #ddd url("images/ajax-loader.gif") 50% 50% no-repeat !important;
+}
+
+.modal-tooltip-container div.ctools-modal-content  {
+  -moz-border-radius:3px 0px 3px 3px;
+  -webkit-border-radius:3px 0px 3px 3px;
+  border: 0px;
+  color: #fff;
+  margin: 0;
+  padding:0;
+  text-align:left;
+  width:400px;
+  height: auto;
+}
+.modal-tooltip-container a.ctools-ajaxing,
+.modal-tooltip-container input.ctools-ajaxing,
+.modal-tooltip-container select.ctools-ajaxing {
+  padding-right: 0 !important; 
+}
+.modal-tooltip-container a.close {
+  float: right;
+  height: 24px;
+  width: 24px;
+  margin: 0 3px;
+  text-indent: -1000px;
+  overflow: hidden;
+  background: #ccc;
+}
+
+.modal-tooltip-container div.ctools-modal-content .modal-header {
+  background-color: transparent;
+  padding: 0 0.25em 0 1em;
+}
+.modal-tooltip-container div.ctools-modal-content #modal-content {
+  height:auto;
+  width:auto;
+  overflow:visible;
+  padding: 0;
+}
+.modal-tooltip-container div.ctools-modal-content {
+  padding: 10px;
+}
+.modal-tooltip-container #modalContent {
+  position: absolute;
+  right: 0;
+  margin: 0 3px;
+}
+.modal-tooltip-container #modal-throbber img {
+  display: inline;
+}
+.modal-tooltip-container #modal-throbber {
+  display:block;
+  text-align:center;
+  margin-top: -110px;
+}
+
+
+.page-content .atrium-folders-navigator .description {
+  font-size:13px;
+  line-height:19px;
+}
+.fileview,
+.fileview a {
+  display: block;
+  height: 40px;
+  width: 40px;
+}
+
+.modal-tooltip-container {
+  opacity: .3;
+}
+
+.atrium-folders-navigator .view-folders-files tr.no-opacity .modal-tooltip-container,
+.atrium-folders-navigator .view-folders-files tr:hover .modal-tooltip-container {
+  opacity: 1;
+}

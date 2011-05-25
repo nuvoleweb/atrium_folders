@@ -1,0 +1,408 @@
+<?php
+
+include_once('atrium_folders.features.inc');
+include_once('includes/atrium_folders.toolbox.inc');
+include_once('atrium_folders.pages.inc');
+include_once('atrium_folders.theme.inc');
+
+define('DOCUMENT_FOLDER', 'folder');
+define('DOCUMENT_FILE', 'file');
+
+/**
+ * Implementation of hook_init().
+ */
+function atrium_folders_init() {
+  drupal_add_css(drupal_get_path('module', 'atrium_folders') .'/atrium_folders.css');
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function atrium_folders_perm() {
+  return array('import folder from filesystem');
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function atrium_folders_help($path, $arg) {
+  if (($path == 'help#atrium_folders') || context_isset('context', 'spaces-feature-folders')) {
+    switch ($path) {
+      case 'node/add/folder':
+      case 'node/%/edit':
+        $help = '';
+        $help .= '<h3>'. t('Folders') .'</h3>';
+        $help .= '<p>'. t('Provide help here') .'</p>';
+        return $help;
+
+      case 'help#atrium_folders':
+      default:
+        $help = '';
+        $help .= '<h3>'. t('Folders') .'</h3>';
+        $help .= '<p>'. t('Provide help here') .'</p>';
+        return $help;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_context_links_alter();
+ */
+function atrium_folders_context_links_alter(&$links) {
+  if (context_get('context', 'folders_listing') && isset($links['folder']) && module_exists('spaces') && $space = spaces_get_space()) {
+    $item = menu_get_item('node/add/folder');
+    $node = menu_get_object();
+    if ($item['access'] && !empty($node->book['mlid'])) {
+      $links['folder']['query'] = "parent={$node->book['mlid']}";
+    }
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function atrium_folders_menu() {
+  $items = array();
+  $items['folders'] = array(
+    'title' => 'Folders',
+    'page callback' => 'atrium_folders_overview',
+    'page arguments' => array(),
+    'access callback' => 'spaces_access_feature',
+    'access arguments' => array('view', 'atrium_folders'),
+    'type' => MENU_NORMAL_ITEM,
+    'menu_name' => 'features',
+    'file' => 'atrium_folders.pages.inc',
+  );
+
+  $items['folders/toolbox/%/%/%'] = array(
+    'title' => 'Folders',
+    'page callback' => 'atrium_folders_toolbox',
+    'page arguments' => array(2, 3, 4),
+    'access callback' => 'spaces_access_feature',
+    'access arguments' => array('view', 'atrium_folders'),
+    'type' => MENU_CALLBACK,
+    'file' => 'atrium_folders.pages.inc',
+  );
+
+  $items['node/%node/tree'] = array(
+    'title' => 'Reorder',
+    'page callback' => 'atrium_folders_tree',
+    'page arguments' => array(1),
+    'access callback' => 'atrium_folders_tree_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+  
+  return $items;
+}
+
+/**
+ * Menu access callback.
+ * @see: atrium_folders_menu()
+ */
+function atrium_folders_tree($node) {
+
+  module_load_include('inc', 'book', 'book.admin');
+  $book = node_load($node->book['bid']);
+  return drupal_get_form('book_admin_edit', $book);
+}
+
+/**
+ * Menu access callback.
+ * @see: atrium_folders_menu()
+ */
+function atrium_folders_tree_access($node) {
+
+  if ($node->type == 'folder') {
+    module_load_include('inc', 'book', 'book.admin');
+    $book = node_load($node->book['bid']);
+    return _book_outline_access($book);
+  }
+  return FALSE;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function atrium_folders_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id == 'folder_node_form') {
+    
+    // Change book strings
+    $form['book']['#title'] = t('Folder tree');
+    $form['book']['plid']['#prefix'] = t('<div id="edit-book-plid-wrapper"><em>No folder selected.</em>');
+    $form['book']['weight']['#description'] = t('Folders at a given level are ordered first by weight and then by name.');
+    $form['book']['bid']['#title'] = t('Folders');
+    $form['book']['bid']['#options']['new'] = '<'. t('Create a new folder') .'>';
+    $form['book']['bid']['#description'] = t('Your folder will be a part of the selected folder tree.');
+    $form['book']['pick-book']['#value'] = t('Change folder (update list of parents)');
+    $form['body_field']['body']['#rows'] = 2; // Reduce body height
+    $form['attachments']['#title'] = t('File upload'); // Change attachments strings
+    $form['attachments']['#collapsible'] = FALSE;
+    $form['attachments']['#collapsed'] = FALSE;
+    $form['attachments']['#description'] = t('Changes made to files are not permanent until you save this folder.');
+    $form['notifications']['#weight'] = 100; // Move notifications at the bottom
+
+    $form['subfolders'] = array(
+      '#title' => t('Subfolders'),
+      '#description' => t('Create multiple subfolders in one shot, one per line.'),
+      '#type' => 'fieldset',
+      '#collapsible' => FALSE,
+      '#tree' => FALSE,
+    );
+    $form['subfolders']['folders'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Subfolder names, one per line'),
+      '#description' => t('Subfolders you want to create, one per line. Empty lines will be ignored.'),
+    );
+
+    // If form is shown in a node view page then apply toolbar theme.
+    $menu_link = menu_get_item();
+    if ($menu_link['path'] == 'node/%') {
+
+      $form['basic'] = array(
+        '#title' => t('Basic infomation'),
+        '#description' => t('Basic information about the folder.'),
+        '#type' => 'fieldset',
+        '#collapsible' => FALSE,
+        '#tree' => FALSE,
+        '#weight' => -50,
+      );
+      $form['basic']['title'] = $form['title'];
+      $form['basic']['body_field'] = $form['body_field'];
+      if (module_exists('dragndrop_uploads')) {
+        $form['attachments']['#description'] .= '<div class="drop-zone">Drop Zone <p>Drag and Drop your files here for a quick upload</p></div>';
+      }
+
+      if (function_exists('zip_open')) {
+        $form['zip_upload'] = array(
+          '#title' => t('Upload multiple files'),
+          '#description' => t('Upload a ZIP archive possibily containing multiple files and folders. The archive will be expanded and its contents will be placed in the current directory.'),
+          '#type' => 'fieldset',
+          '#collapsible' => FALSE,
+          '#tree' => FALSE,
+          '#weight' => 150,
+          '#theme' => 'folder_toolbar_fieldset',
+        );
+        $form['zip_upload']['zip'] = array(
+          '#type' => 'file',
+          '#title' => t('ZIP archive'),
+        );  
+        $form['#attributes'] = array('enctype' => 'multipart/form-data');
+        $form['#validate'] = array_merge(array('atrium_folders_import_validate'), $form['#validate']);
+        $form['#submit'] = array_merge(array('atrium_folders_import_submit'), $form['#submit']);
+      }
+      
+      unset($form['title']);
+      unset($form['body_field']);
+      unset($form['book']);
+      unset($form['attachments']['wrapper']['files']);
+
+      $form['basic']['#theme'] =
+      $form['notifications']['#theme'] =
+      $form['subfolders']['#theme'] =
+      $form['attachments']['#theme'] = 'folder_toolbar_fieldset';
+      $form['#theme'] = array('folder_toolbar_form');
+    }
+
+    // Add #validate callbacks
+    $form['#validate'] = array_merge(array('atrium_folders_node_form_submit_validate'), $form['#validate']);
+  }
+  
+  // Redirect to parent folder.
+  if ($form_id == 'node_delete_confirm') {
+    $node = node_load($form['nid']['#value']);
+    if ($node->type == 'folder') {
+      $menu_link = menu_link_load($node->book['plid']);
+      $form['#redirect'] = $menu_link['link_path'];
+    }
+  }
+}
+
+/**
+ * Implementation of #validate callback
+ */
+function atrium_folders_node_form_submit_validate(&$form, &$form_state) {
+  // Fix time conflict due to AJAX calls.
+  $form_state['values']['changed'] = time();
+}
+
+/**
+ * Implemenation of hook_nodeapi().
+ */
+function atrium_folders_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  if ($op == 'insert' || $op == 'update') {
+    if($node->type == 'folder' && trim($node->folders)) {
+      foreach(explode("\n", $node->folders) as $folder) {
+        // Skip empty lines and sanitize names.
+        if ($folder = trim($folder)) {  
+          $node_folder = new stdClass();
+          $node_folder->type = 'folder';
+          $node_folder->title = $folder;
+          $node_book = node_load($node->nid);
+          $_GET['parent'] = $node_book->book['mlid'];
+          node_object_prepare($node_folder);
+          node_save($node_folder);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_theme()
+ */
+function atrium_folders_theme() {
+  return array(
+    'folder_toolbar_fieldset' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'folder_toolbar_form' => array(
+      'arguments' => array('form' => NULL),
+    ),
+    'folders_navigator' => array(
+      'template' => 'navigator',
+      'arguments' => array('node' => NULL, 'form' => NULL),
+      'path' => drupal_get_path('module', 'atrium_folders') .'/themes',
+    ),
+    'toolbox_link' => array(
+      'template' => 'toolbox-link',
+      'arguments' => array('text' => NULL, 'dest' => NULL, 'dom_id' => NULL, 'class' => NULL),
+      'path' => drupal_get_path('module', 'atrium_folders') .'/themes',
+    ),
+    'textfields' => array(
+      'arguments' => array('element' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_preprocess_views_view_table()
+ */
+function atrium_folders_preprocess_views_view_table(&$vars) {
+  if ($vars['view']->name == 'folders_files') {
+    foreach ($vars['view']->result as $key => $row) {
+      $vars['row_classes'][$key][] = 'file-'. $row->fid;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_preprocess_views_view_unformatted()
+ */
+function atrium_folders_preprocess_views_view_unformatted(&$vars) {
+  if ($vars['view']->name == 'folders_navigation') {
+
+    $trail = array();
+    $node = menu_get_object();
+    foreach (book_build_active_trail($vars['node']->book) as $item) {
+      $trail[] = $item['href'];
+    }
+
+    foreach ($vars['rows'] as $id => $row) {
+
+      if (in_array('node/'. $vars['view']->result[$id]->nid, $trail)) { // Append trail class
+        $vars['classes'][$id] .= ' trail';
+        $vars['classes_array'][$id][] = 'trail';
+      }
+
+      if ($_GET['q'] == 'node/'. $vars['view']->result[$id]->nid) { // Append active class
+        $vars['classes'][$id] .= ' active';
+        $vars['classes_array'][$id][] = 'active';
+      }
+
+      if (isset($vars['view']->result[$id]->book_menu_links_depth)) { // Append depth class
+        $depth = ' depth-'. $vars['view']->result[$id]->book_menu_links_depth;
+        $vars['classes'][$id] .= $depth;
+        $vars['classes_array'][$id][] = $depth;
+      }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_preprocess_node()
+ */
+function atrium_folders_preprocess_node(&$vars) {
+
+  if ($vars['type'] == 'folder') {
+    $node = node_load($vars['node']->nid);
+    module_load_include('inc', 'node', 'node.pages');
+    $form = drupal_get_form($node->type .'_node_form', $node);
+    $vars['content'] = theme('folders_navigator', $node, $form);
+    $vars['links'] = $vars['node']->title = $vars['title'] = '';
+    $vars['submitted'] = '';
+  }
+}
+
+/**
+ * Implementation of hook_folder_toolbox()
+ */
+function atrium_folders_folder_toolbox() {
+
+  $items = array();
+  $items[] = array(
+    'op' => 'move',
+    'type' => 'file',
+    'title' => t('Move'),
+    'description' => t('Move the file to another location.'),
+    'form callback' => 'atrium_folders_move_file',
+    'ajax callback' => 'atrium_folders_move_file_ajax_callback',
+  );
+  $items[] = array(
+    'op' => 'rename',
+    'type' => 'file',
+    'title' => t('Rename'),
+    'description' => t('Rename the file.'),
+    'form callback' => 'atrium_folders_rename_file',
+    'ajax callback' => 'atrium_folders_rename_file_ajax_callback',
+  );
+  $items[] = array(
+    'op' => 'delete',
+    'type' => 'file',
+    'title' => t('Delete'),
+    'description' => t('Delete the file.'),
+    'form callback' => 'atrium_folders_delete_file',
+    'ajax callback' => 'atrium_folders_delete_file_ajax_callback',
+  );
+
+  return $items;
+}
+
+/**
+ * Helper: get toolbox info.
+ */
+function _atrium_folders_get_toolbox_info($op, $type) {
+  foreach (module_invoke_all('folder_toolbox') as $toolbox) {
+    if ($toolbox['op'] == $op && $toolbox['type'] == $type) {
+      return $toolbox;
+    }
+  }
+  return array();
+}
+
+/**
+ * Helper: get node object from NID or FID
+ */
+function _atrium_folders_get_node($op, $type, $id) {
+  if ($type == 'folder') {
+    return node_load($id);
+  }
+  elseif ($type == 'file' && $result = db_query("SELECT nid FROM {upload} WHERE fid = %d ", $id)) {
+    $node = db_fetch_object($result);
+    return node_load($node->nid);
+  }
+  else {
+    return NULL;
+  }
+}
+
+/**
+ * Helper: return DOM id string.
+ */
+function _atrium_folders_dom_id() {
+  $args = func_get_args();
+  return implode('-', $args);
+}
+

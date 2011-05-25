@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function atrium_folders_install() {
+  $book_types = variable_get('book_allowed_types', array());
+  $book_types[] = 'folder';
+  $book_types = variable_set('book_allowed_types', $book_types);
+}
+
+function atrium_folders_enable() {
+  db_query("UPDATE {system} SET weight = 11 WHERE name = 'atrium_folders' AND type = 'module'");
+}
+
+/**
+ * Adding folder to book_allowed_types
+ */
+function atrium_folders_update_6001() {
+
+  $book_types = variable_get('book_allowed_types', array());
+  $book_types[] = 'folder';
+  $book_types = variable_set('book_allowed_types', $book_types);
+  $return[] = array('success' => true, 'query' => "Adding folder to book_allowed_types.");
+  return $return;
+}
+
+/**
+ * Place Atrium Folders feature at the bottom of the hook execution list.
+ */
+function atrium_folders_update_6002() {
+
+  $query = db_query("UPDATE {system} SET weight = 11 WHERE name = 'atrium_folders' AND type = 'module'");
+  $return[] = array('success' => true, 'query' => "Place Atrium Folders feature at the bottom of the hook execution list.");
+  return $return;
+}
+
+/**
+ * Fix wrong menu name in automatically imported folders.
+ */
+function atrium_folders_update_6003() {
+  
+  $query = db_query("UPDATE {menu_links} m LEFT JOIN {book} b ON b.mlid = m.mlid SET m.menu_name = CONCAT('book-toc-', b.bid) WHERE m.module = 'book'");
+  $return[] = array('success' => true, 'query' => "Fix wrong menu name in automatically imported folders.");
+  return $return;
+}
+
+/**
+ * Fix wrong menu name and module in book node.
+ */
+function atrium_folders_update_6004() {
+  
+  $query = db_query("UPDATE {menu_links} m LEFT JOIN {book} b ON b.mlid = m.mlid SET m.menu_name = CONCAT('book-toc-', b.bid), m.module = 'book' WHERE m.module = 'menu'");
+  $return[] = array('success' => true, 'query' => "Fix wrong menu name and module in book node");
+  return $return;
+}
+
+
+
+
+
+
