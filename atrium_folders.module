@@ -327,9 +327,12 @@ function atrium_folders_preprocess_views_view_unformatted(&$vars) {
 function atrium_folders_preprocess_node(&$vars) {
 
   if ($vars['type'] == 'folder') {
+    $form = '';
     $node = node_load($vars['node']->nid);
-    module_load_include('inc', 'node', 'node.pages');
-    $form = drupal_get_form($node->type .'_node_form', $node);
+    if (node_access('update', $node)) {
+      module_load_include('inc', 'node', 'node.pages');
+      $form = drupal_get_form($node->type .'_node_form', $node);
+    }
     $vars['content'] = theme('folders_navigator', $node, $form);
     $vars['links'] = $vars['node']->title = $vars['title'] = '';
     $vars['submitted'] = '';
