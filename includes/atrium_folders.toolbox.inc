@@ -191,7 +191,6 @@ function atrium_folders_delete_file(&$form_state) {
   $form['buttons']['#prefix'] = '<div class="buttons" style="display: block;">';
   $form['buttons']['#suffix'] = '</div>';
 
-
   return $form;
 }
 

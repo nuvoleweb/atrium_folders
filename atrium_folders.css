@@ -314,3 +314,26 @@ td.views-field.icon {
 .atrium-folders-navigator .view-folders-files tr:hover .modal-tooltip-container {
   opacity: 1;
 }
+
+.ctools-modal-content input {
+  display: inline !important;
+}
+
+.atrium-folders-navigator .views-row {
+  padding: 0;
+  margin: 0;
+}
+
+.atrium-folders-navigator table.views-table {
+  border-width: 0;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.atrium-folders-navigator table td.views-field.date,
+.atrium-folders-navigator table td.views-field.filesize {
+  white-space: nowrap;
+}
+.atrium-folders-navigator .views-field.description a:hover {
+  background-color: transparent;
+  text-decoration: underline;
+}

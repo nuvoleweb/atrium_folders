@@ -92,7 +92,6 @@
           if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
             return false;
           }
-
         });
     }
   };
@@ -107,7 +106,7 @@
   }  
 
   /**
-   * Show modal dialog on ajax call success.
+   * Dismiss modal dialog on ajax call success.
    */
   Drupal.CTools.AJAX.commands.dismiss_modal_toolbox = function(command) {
     Drupal.AtriumFolders.ModalToolbox.dismiss();
