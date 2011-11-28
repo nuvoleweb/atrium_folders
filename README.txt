@@ -29,3 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Thanks to Education Northwest http://educationnorthwest.org for sponsoring the 
 development needed for jQuery Update compatibility.
+
+## Credits download option
+
+Download option created by Robin van Emden, Antenna Foundation.
+Sponsored by Solidaridad Network, http://solidaridadnetwork.org.

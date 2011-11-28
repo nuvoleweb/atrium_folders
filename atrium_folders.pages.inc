@@ -29,7 +29,23 @@ function atrium_folders_import_submit(&$form, $form_state) {
     else {
       drupal_set_message(t('Error opening the ZIP archive'), 'error');
     }
-  }  
+  }
+
+  if ($form_state['values']['choice']!=null) {
+    $result_succes = false;
+    $group = spaces_get_space();
+    module_load_include('inc', 'atrium_folders', 'includes/atrium_folders.export');
+    if ($form_state['values']['choice']==0) {
+      $files_upped = upload_load(node_load($form_state['values']['nid'] )); 
+    } else {
+      $nids = atrium_folders_export_get_children_nids(node_load($form_state['values']['nid'])->book);
+      $files_upped = atrium_folders_export_get_deep_downed ($nids);
+    }
+    $zip_paths = atrium_folders_export_retrieve_paths ($files_upped); 
+    $result_success = atrium_folders_export_create_zip ($zip_paths,file_directory_temp().'/'.$group->group->title.'_'.time().'.zip',false);
+    if (!$result_success) drupal_set_message(t('Error creating the ZIP archive'), 'error'); 
+    //drupal_set_message(print_r($zip_paths,1)."-".file_directory_temp().'-'.$result_success, 'error');
+  } 
 }
 
 /**

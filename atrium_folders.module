@@ -176,6 +176,7 @@ function atrium_folders_form_alter(&$form, &$form_state, $form_id) {
       }
 
       if (function_exists('zip_open')) {
+        // upload archives
         $form['zip_upload'] = array(
           '#title' => t('Upload multiple files'),
           '#description' => t('Upload a ZIP archive possibily containing multiple files and folders. The archive will be expanded and its contents will be placed in the current directory.'),
@@ -192,8 +193,24 @@ function atrium_folders_form_alter(&$form, &$form_state, $form_id) {
         $form['#attributes'] = array('enctype' => 'multipart/form-data');
         $form['#validate'] = array_merge(array('atrium_folders_import_validate'), $form['#validate']);
         $form['#submit'] = array_merge(array('atrium_folders_import_submit'), $form['#submit']);
+
+        // download archives
+        $form['zip_download'] = array(
+          '#title' => t('Download multiple files'),
+          '#description' => t('Download multiple files from current directory or tree.'),
+          '#type' => 'fieldset',  
+          '#collapsible' => FALSE,
+          '#tree' => FALSE,
+          '#weight' => 175,
+          '#theme' => 'folder_toolbar_fieldset',
+        );
+        $form['zip_download']['choice'] = array(
+          '#type' => 'radios',
+          '#title' => t('Which files to download'),
+          '#options' => array(t('Current directory.'), t('Current directory and all deeper directories.')),
+        );    
       }
-      
+ 
       unset($form['title']);
       unset($form['body_field']);
       unset($form['book']);
