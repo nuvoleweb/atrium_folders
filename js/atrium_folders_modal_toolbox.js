@@ -78,6 +78,9 @@
       .addClass('modal-toolbox-processed')
       .click(Drupal.AtriumFolders.ModalToolbox.clickAjaxLink);
 
+    // Show submit buttons in modal form (hidden by itweak_upload behaviors)
+    $('#modal-content .buttons input[type="submit"]:not(.modal-toolbox-processed)').show().addClass('modal-toolbox-processed');
+
     if ($(context).attr('id') == 'modal-content') {
       // Bind submit links in the modal form.
       $('form:not(.modal-toolbox-processed)', context)
