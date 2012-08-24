@@ -162,7 +162,7 @@ function atrium_folders_form_alter(&$form, &$form_state, $form_id) {
     if ($menu_link['path'] == 'node/%') {
 
       $form['basic'] = array(
-        '#title' => t('Basic infomation'),
+        '#title' => t('Basic information'),
         '#description' => t('Basic information about the folder.'),
         '#type' => 'fieldset',
         '#collapsible' => FALSE,
