@@ -11,6 +11,19 @@ function atrium_folders_import_validate($form, &$form_state) {
 }
 
 /**
+ * Internal funtion for deleting temp directories after we're done with them.
+ */
+function _atrium_folders_delete_directory($dir) {
+  if (!file_exists($dir)) return TRUE;
+  if (!is_dir($dir)) return unlink($dir);
+  foreach (scandir($dir) as $item) {
+    if ($item == '.' || $item == '..') continue;
+    if (!_atrium_folders_delete_directory($dir . DIRECTORY_SEPARATOR . $item)) return FALSE;
+  }
+  return rmdir($dir);
+}
+
+/**
  * Implementation of #submit callback.
  */
 function atrium_folders_import_submit(&$form, $form_state) {
@@ -24,6 +37,7 @@ function atrium_folders_import_submit(&$form, $form_state) {
       module_load_include('inc', 'atrium_folders', 'includes/atrium_folders.import');
       $data = atrium_folders_import_create_book($temp, $group->group->nid, $parent);
       drupal_set_message(t('Created !folders folders and !files files.', array('!folders' => $data['folders'], '!files' => $data['files'])));
+      _atrium_folders_delete_directory($temp);
       $form['#redirect'] ='node/'. $data['parent']->nid;
     }
     else {
